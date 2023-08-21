@@ -1,23 +1,14 @@
 import os
+import cv2
 import argparse
 import numpy as np
-import cv2
-import tqdm as tqdm
 from models import build_stixel_net
-from data_loader import KittiStixelDataset
 from albumentations import (
     Compose,
     Resize,
     Normalize,
 )
 import tensorflow.keras.backend as K
-
-parser = argparse.ArgumentParser()
-parser.add_argument("--model_path", default="saved_models/model-033.h5")
-# parser.add_argument(
-#     "--image_path", re=True
-# )
-parsed_args = parser.parse_args()
 
 directory = "out"
 
@@ -49,42 +40,29 @@ def test_single_image(model, img, label_size=(100, 50)):
 
 def main(args):
     assert os.path.isfile(args.model_path)
-    # assert os.path.isfile(args.image_path)
     from config import Config
 
     dt_config = Config()
     model = build_stixel_net()
     model.load_weights(args.model_path)
-    val_set = KittiStixelDataset(
-        data_path=dt_config.DATA_PATH,
-        ground_truth_path=dt_config.GROUND_TRUTH_PATH,
-        phase="val",
-        batch_size=1,
-        input_shape=None,
-    )
 
-    indices = (
-        100,
-        156,
-        145,
-        200,
-        250,
-        300,
-        400,
-        500,
-        424,
-        543,
-        567,
-        600,
-        632,
-        700,
-    )
-    for i, idx in tqdm.tqdm(enumerate(indices)):
-        img, _ = val_set[idx]
-        img = img[0]
-        result = test_single_image(model, img)
-        cv2.imwrite("out/result{}.png".format(i), result)
+    # Directory containing the images
+    img_folder = "im"
+
+    # Iterate through all .jpg files in the folder
+    for i, img_filename in enumerate(os.listdir(img_folder)):
+        if img_filename.endswith(".jpg"):
+            img_path = os.path.join(img_folder, img_filename)
+            img = cv2.imread(img_path)
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
+            # img = img.astype(np.float32) / 255.0  # Normalize the pixel values to [0, 1]
+
+            result = test_single_image(model, img)
+            cv2.imwrite(f"out/result{i}.png", result.astype(np.uint8))  # Save the result
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model_path", default="saved_models/model-033.h5")
+    parsed_args = parser.parse_args()
     main(parsed_args)

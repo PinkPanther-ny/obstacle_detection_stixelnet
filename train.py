@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 from tensorflow.keras.callbacks import (
     ModelCheckpoint,
     ReduceLROnPlateau,
@@ -82,7 +80,7 @@ def main():
             verbose=1,
             save_best_only=True,
             mode="auto",
-            period=1,
+            save_freq=1,
         ),
         ReduceLROnPlateau(
             monitor="val_loss",
@@ -98,9 +96,9 @@ def main():
     ]
 
     model.compile(loss=loss_func, optimizer=opt)
-    model.summary()
+    # model.summary()
 
-    history = model.fit_generator(
+    history = model.fit(
         train_set,
         steps_per_epoch=len(train_set),
         validation_data=val_set,

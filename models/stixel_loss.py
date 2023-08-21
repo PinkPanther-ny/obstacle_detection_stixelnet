@@ -1,10 +1,7 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import numpy as np
 import tensorflow as tf
-import tensorflow.keras as keras
-from keras.losses import Loss
-import keras.backend as K
+from tensorflow.keras.losses import Loss
+import tensorflow.keras.backend as K
 
 
 class StixelLoss(Loss):

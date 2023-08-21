@@ -1,4 +1,8 @@
-tensorflow-gpu==2.9.3
-albumentations==0.4.3
+tensorflow-gpu
+albumentations
 matplotlib
 pykitti
+tqdm
+numpy
+keras
+requests
